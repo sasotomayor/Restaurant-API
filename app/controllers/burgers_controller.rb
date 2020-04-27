@@ -5,14 +5,14 @@ class BurgersController < ApplicationController
     #render json: {status: 'SUCCESS', message: 'Loaded burgers', data:burgers}, status: :ok
     render json: {status: 'SUCCESS', message: 'Todas las hamburguesas del menú', data:burgers.map{|burger| {id: burger[:id],
       nombre: burger[:nombre], descripcion: burger[:descripcion], imagen: burger[:imagen],
-      ingredientes: burger.ingredients.map{|ing| {path: "https://hamburgueseria.com/ingrediente/#{ing[:id]}"}}}}}, status: :ok
+      ingredientes: burger.ingredients.map{|ing| {path: "https://whispering-thicket-50827.herokuapp.com/ingrediente/#{ing[:id]}"}}}}}, status: :ok
   end
 
   def show
     burger = Burger.find(params[:id])
     render json: {status: 'SUCCESS', message: 'Hamburguesa solicitada', data: {id: burger[:id],
       nombre: burger[:nombre], descripcion: burger[:descripcion], imagen: burger[:imagen],
-      ingredientes: burger.ingredients.map{|ing| {path: "https://hamburgueseria.com/ingrediente/#{ing[:id]}"}}}}, status: :ok
+      ingredientes: burger.ingredients.map{|ing| {path: "https://whispering-thicket-50827.herokuapp.com/ingrediente/#{ing[:id]}"}}}}, status: :ok
   end
 
   def create
