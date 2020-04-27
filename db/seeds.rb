@@ -5,8 +5,3 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
-antonio = Burger.create!("name":"Antonio")
-heavenly = Ingredient.create!(:name => "Heavenly")
-heavenly2 = Ingredient.create!(:name => "Aloha")
-antonio.ingredients << heavenly
-heavenly2.burgers << antonio

@@ -10,13 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_26_214715) do
+ActiveRecord::Schema.define(version: 2020_04_27_003814) do
 
   create_table "burgers", force: :cascade do |t|
-    t.string "name"
-    t.integer "price"
-    t.text "description"
-    t.string "image"
+    t.string "nombre"
+    t.integer "precio"
+    t.text "descripcion"
+    t.string "imagen"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
@@ -24,13 +24,11 @@ ActiveRecord::Schema.define(version: 2020_04_26_214715) do
   create_table "burgers_ingredients", id: false, force: :cascade do |t|
     t.integer "burger_id"
     t.integer "ingredient_id"
-    t.index ["burger_id"], name: "index_burgers_ingredients_on_burger_id"
-    t.index ["ingredient_id"], name: "index_burgers_ingredients_on_ingredient_id"
   end
 
   create_table "ingredients", force: :cascade do |t|
-    t.string "name"
-    t.text "description"
+    t.string "nombre"
+    t.text "descripcion"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
