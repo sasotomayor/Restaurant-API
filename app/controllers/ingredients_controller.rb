@@ -19,8 +19,12 @@ class IngredientsController < ApplicationController
 
   def create
     ingredient = Ingredient.new(ingredient_params)
-    if ingredient.save
-      render json: {id: ingredient[:id], nombre: ingredient[:nombre], descripcion: ingredient[:descripcion]}, status: 201
+    if ingredient_params[:nombre] && ingredient_params[:descripcion]
+      if ingredient.save
+        render json: {id: ingredient[:id], nombre: ingredient[:nombre], descripcion: ingredient[:descripcion]}, status: 201
+      else
+        render json: {message: 'Input inválido'}, status: 400
+      end
     else
       render json: {message: 'Input inválido'}, status: 400
     end
