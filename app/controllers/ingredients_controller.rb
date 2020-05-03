@@ -13,24 +13,27 @@ class IngredientsController < ApplicationController
     ingredient = Ingredient.new(ingredient_params)
 
     if ingredient.save
-      render json: {status: 'SUCCESS', message: 'Ingrediente creado', data:ingredient}, status: 201
+      render json: {ingredient}, status: 201
     else
-      render json: {status: 'ERROR', message: 'Ingrediente no se ha creado', data:ingredient.errors}, status: :unprocessable_entity
+      render json: {status: 'ERROR', message: 'Ingrediente no se ha creado', data:ingredient.errors}, status: 400
     end
   end
 
   def destroy
     ingredient = Ingredient.find(params[:id])
+    if ingredient.empty?
+      render json: {status: 'ERROR', message: 'Ingrediente inexistente', data:ingredient}, status: 404
+    end
     if params[:burger_id]
       burger = Burger.find(params[:burger_id])
       burger.ingredients.delete(ingredient)
-      render json: {status: 'SUCCESS', message: 'Ingrediente eliminado de la hamburguesa', data:ingredient}, status: :ok
+      render json: {status: 'SUCCESS', message: 'Ingrediente eliminado de la hamburguesa', data:ingredient}, status: 200
     else
       if ingredient.burgers.empty?
         ingredient.destroy
-        render json: {status: 'SUCCESS', message: 'Ingrediente eliminado', data:ingredient}, status: :ok
+        render json: {status: 'SUCCESS', message: 'Ingrediente eliminado', data:ingredient}, status: 200
       else
-        render json: {status: 'ERROR', message: 'Ingrediente no se ha eliminado', data:ingredient}, status: :ok
+        render json: {status: 'ERROR', message: 'Ingrediente no se ha eliminado', data:ingredient}, status: 409
       end
     end
   end
@@ -38,11 +41,17 @@ class IngredientsController < ApplicationController
   def update
     ingredient = Ingredient.find(params[:id])
     burger = Burger.find(params[:burger_id])
+    if ingredient.empty?
+      render json: {status: 'ERROR', message: 'Ingrediente no agregado a la hamburguesa', data:ingredient}, status: 404
+    end
+    if burger.empty?
+      render json: {status: 'ERROR', message: 'Ingrediente no agregado a la hamburguesa', data:ingredient}, status: 400
+    end
     burger.ingredients << ingredient
     if ingredient.update_attributes(ingredient_params)
-      render json: {status: 'SUCCESS', message: 'Ingrediente agregado a la hamburguesa', data:ingredient}, status: :ok
+      render json: {status: 'SUCCESS', message: 'Ingrediente agregado a la hamburguesa', data:ingredient}, status: 201
     else
-      render json: {status: 'ERROR', message: 'Ingrediente no agregado a la hamburguesa', data:ingredient}, status: :ok
+      render json: {status: 'ERROR', message: 'Ingrediente no agregado a la hamburguesa', data:ingredient}, status: 400
     end
   end
 

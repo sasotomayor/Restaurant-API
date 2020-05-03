@@ -39,13 +39,16 @@ class BurgersController < ApplicationController
 
   def update
     burger = Burger.find(params[:id])
+    if burger.empty?
+        render json: {status: 'ERROR', message: 'Hamburguesa inexistente', data:burger}, status: 404
+    end
     if burger_params[:id] || burger_params[:ingredientes]
-      render json: {status: 'ERROR', message: 'Hamburguesa no se ha modificado', data:burger}, status: :ok
+      render json: {status: 'ERROR', message: 'Parámetros inválidos', data:burger}, status: 400
     else
       if burger.update_attributes(burger_params)
-        render json: {status: 'SUCCESS', message: 'Hamburguesa modificada', data:burger}, status: :ok
+        render json: {status: 'SUCCESS', message: 'Hamburguesa modificada', data:burger}, status: 200
       else
-        render json: {status: 'ERROR', message: 'Hamburguesa no se ha modificado', data:burger}, status: :ok
+        render json: {status: 'ERROR', message: 'Hamburguesa no se ha modificado', data:burger}, status: 400
       end
     end
   end
