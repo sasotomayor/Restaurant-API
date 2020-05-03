@@ -13,7 +13,7 @@ class IngredientsController < ApplicationController
     ingredient = Ingredient.new(ingredient_params)
 
     if ingredient.save
-      render json: {status: 'SUCCESS', message: 'Ingrediente creado', data:ingredient}, status: :ok
+      render json: {status: 'SUCCESS', message: 'Ingrediente creado', data:ingredient}, status: 201
     else
       render json: {status: 'ERROR', message: 'Ingrediente no se ha creado', data:ingredient.errors}, status: :unprocessable_entity
     end

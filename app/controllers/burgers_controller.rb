@@ -2,32 +2,39 @@
 class BurgersController < ApplicationController
   def index
     burgers = Burger.order('id ASC');
-    #render json: {status: 'SUCCESS', message: 'Loaded burgers', data:burgers}, status: :ok
     render json: {status: 'SUCCESS', message: 'Todas las hamburguesas del menú', data:burgers.map{|burger| {id: burger[:id],
       nombre: burger[:nombre], descripcion: burger[:descripcion], imagen: burger[:imagen],
-      ingredientes: burger.ingredients.map{|ing| {path: "https://whispering-thicket-50827.herokuapp.com/ingrediente/#{ing[:id]}"}}}}}, status: :ok
+      ingredientes: burger.ingredients.map{|ing| {path: "https://whispering-thicket-50827.herokuapp.com/ingrediente/#{ing[:id]}"}}}}}, status: 200
   end
 
   def show
     burger = Burger.find(params[:id])
-    render json: {status: 'SUCCESS', message: 'Hamburguesa solicitada', data: {id: burger[:id],
-      nombre: burger[:nombre], descripcion: burger[:descripcion], imagen: burger[:imagen],
-      ingredientes: burger.ingredients.map{|ing| {path: "https://whispering-thicket-50827.herokuapp.com/ingrediente/#{ing[:id]}"}}}}, status: :ok
+    if burger.empty?
+      render json: {status: 'ERROR', message: 'Hamburguesa inexistente', data: {}}, status: 404
+    else
+      render json: {status: 'SUCCESS', message: 'Hamburguesa solicitada', data: {id: burger[:id],
+        nombre: burger[:nombre], descripcion: burger[:descripcion], imagen: burger[:imagen],
+        ingredientes: burger.ingredients.map{|ing| {path: "https://whispering-thicket-50827.herokuapp.com/ingrediente/#{ing[:id]}"}}}}, status: 200
+    end
   end
 
   def create
     burger = Burger.new(burger_params)
     if burger.save
-      render json: {status: 'SUCCESS', message: 'Hamburguesa creada', data:burger}, status: :ok
+      render json: {status: 'SUCCESS', message: 'Hamburguesa creada', data:burger}, status: 201
     else
-      render json: {status: 'ERROR', message: 'Hamburguesa no se ha creado', data:burger.errors}, status: :unprocessable_entity
+      render json: {status: 'ERROR', message: 'Hamburguesa no se ha creado', data:burger.errors}, status: 400
     end
   end
 
   def destroy
     burger = Burger.find(params[:id])
-    burger.destroy
-    render json: {status: 'SUCCESS', message: 'Hamburguesa eliminada', data:burger}, status: :ok
+    if burger.empty?
+      render json: {status: 'ERROR', message: 'Hamburguesa inexistente', data:{}}, status: 404
+    else
+      burger.destroy
+      render json: {status: 'SUCCESS', message: 'Hamburguesa eliminada', data:burger}, status: 200
+    end
   end
 
   def update

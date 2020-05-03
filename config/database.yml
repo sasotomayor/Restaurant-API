@@ -14,7 +14,7 @@ development:
   adapter: postgresql
   encoding: unicode
   pool: 5
-  username: ssotomayor
+  username: sasotomayor
   password: Sasb1996
   timeout: 5000
   database: restaurant_development
@@ -27,7 +27,7 @@ test:
   adapter: postgresql
   encoding: unicode
   pool: 5
-  username: ssotomayor
+  username: sasotomayor
   password: Sasb1996
   timeout: 5000
   database: db/restaurant_test
