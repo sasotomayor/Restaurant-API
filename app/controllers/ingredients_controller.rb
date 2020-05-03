@@ -13,7 +13,7 @@ class IngredientsController < ApplicationController
     ingredient = Ingredient.new(ingredient_params)
 
     if ingredient.save
-      render json: {ingredient}, status: 201
+      render json: {id: ingredient[:id], nombre: ingredient[:nombre], descripcion: ingredient[:descripcion]}, status: 201
     else
       render json: {status: 'ERROR', message: 'Ingrediente no se ha creado', data:ingredient.errors}, status: 400
     end
