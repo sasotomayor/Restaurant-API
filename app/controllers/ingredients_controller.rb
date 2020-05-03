@@ -1,39 +1,55 @@
 class IngredientsController < ApplicationController
   def index
     ingredients = Ingredient.order('id ASC');
-    render json: {status: 'SUCCESS', message: 'Todos los ingredientes del menú', data:ingredients}, status: :ok
+    render json: ingredients, status: 200
   end
 
   def show
-    ingredient = Ingredient.find(params[:id])
-    render json: {status: 'SUCCESS', message: 'Ingrediente solicitado', data:ingredient}, status: :ok
+    if params[:id].is_a? String
+      ingredient = Ingredient.find(params[:id])
+      if ingredient != nil
+        render json: ingredient, status: 200
+      else
+        render json: {message: 'Ingrediente inexistente'}, status: 404
+      end
+    else
+        render json: {message: 'ID inválido'}, status: 400
+    end
   end
 
   def create
     ingredient = Ingredient.new(ingredient_params)
-
     if ingredient.save
       render json: {id: ingredient[:id], nombre: ingredient[:nombre], descripcion: ingredient[:descripcion]}, status: 201
     else
-      render json: {status: 'ERROR', message: 'Ingrediente no se ha creado', data:ingredient.errors}, status: 400
+      render json: {message: 'Input inválido'}, status: 400
     end
   end
 
   def destroy
     ingredient = Ingredient.find(params[:id])
-    if ingredient.empty?
-      render json: {status: 'ERROR', message: 'Ingrediente inexistente', data:ingredient}, status: 404
-    end
-    if params[:burger_id]
-      burger = Burger.find(params[:burger_id])
-      burger.ingredients.delete(ingredient)
-      render json: {status: 'SUCCESS', message: 'Ingrediente eliminado de la hamburguesa', data:ingredient}, status: 200
+    if ingredient == nil
+      render json: {message: 'Ingrediente inexistente'}, status: 404
     else
-      if ingredient.burgers.empty?
-        ingredient.destroy
-        render json: {status: 'SUCCESS', message: 'Ingrediente eliminado', data:ingredient}, status: 200
+      if params[:burger_id]
+        burger = Burger.find(params[:burger_id])
+        if burger.empty?
+          render json: {message: 'ID inválido'}, status: 400
+        else
+          if burger.ingredients.include? ingredient
+            burger.ingredients.delete(ingredient)
+            render json: {message: 'Ingrediente retirado'}, status: 200
+          else
+            render json: {message: 'Ingrediente inexistente en la hamburguesa'}, status: 404
+          end
+        end
       else
-        render json: {status: 'ERROR', message: 'Ingrediente no se ha eliminado', data:ingredient}, status: 409
+        if ingredient.burgers.empty?
+          ingredient.destroy
+          render json: {message: 'Ingrediente eliminado'}, status: 200
+        else
+          render json: {message: 'Ingrediente no se puede borrar, se encuentra presente en una hamburguesa'}, status: 409
+        end
       end
     end
   end
@@ -41,17 +57,19 @@ class IngredientsController < ApplicationController
   def update
     ingredient = Ingredient.find(params[:id])
     burger = Burger.find(params[:burger_id])
-    if ingredient.empty?
-      render json: {status: 'ERROR', message: 'Ingrediente no agregado a la hamburguesa', data:ingredient}, status: 404
-    end
-    if burger.empty?
-      render json: {status: 'ERROR', message: 'Ingrediente no agregado a la hamburguesa', data:ingredient}, status: 400
-    end
-    burger.ingredients << ingredient
-    if ingredient.update_attributes(ingredient_params)
-      render json: {status: 'SUCCESS', message: 'Ingrediente agregado a la hamburguesa', data:ingredient}, status: 201
+    if ingredient == nil
+      render json: {message: 'Ingrediente inexistente'}, status: 404
     else
-      render json: {status: 'ERROR', message: 'Ingrediente no agregado a la hamburguesa', data:ingredient}, status: 400
+      if burger == nil
+        render json: {message: 'ID de hamburguesa inválido'}, status: 400
+      else
+        burger.ingredients << ingredient
+        if ingredient.update_attributes(ingredient_params)
+          render json: {message: 'Ingrediente agregado'}, status: 201
+        else
+          render json: {message: 'ID iválido'}, status: 400
+        end
+      end
     end
   end
 
