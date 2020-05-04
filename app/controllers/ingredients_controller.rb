@@ -5,15 +5,11 @@ class IngredientsController < ApplicationController
   end
 
   def show
-    if params[:id].is_a? String
-      ingredient = Ingredient.find(params[:id])
-      if ingredient != nil
-        render json: ingredient, status: 200
-      else
-        render json: {message: 'Ingrediente inexistente'}, status: 404
-      end
+    if Ingredient.where(id: params[:id]).empty?
+      render json: {message: 'Ingrediente inexistente'}, status: 404
     else
-        render json: {message: 'ID inválido'}, status: 400
+      ingredient = Ingredient.find(params[:id])
+      render json: ingredient, status: 200
     end
   end
 
@@ -21,7 +17,7 @@ class IngredientsController < ApplicationController
     ingredient = Ingredient.new(ingredient_params)
     if ingredient_params[:nombre] && ingredient_params[:descripcion]
       if ingredient.save
-        render json: {id: ingredient[:id], nombre: ingredient[:nombre], descripcion: ingredient[:descripcion]}, status: 201
+        render json: ingredient, status: 201
       else
         render json: {message: 'Input inválido'}, status: 400
       end
@@ -31,15 +27,15 @@ class IngredientsController < ApplicationController
   end
 
   def destroy
-    ingredient = Ingredient.find(params[:id])
-    if ingredient == nil
+    if Ingredient.where(id: params[:id]).empty?
       render json: {message: 'Ingrediente inexistente'}, status: 404
     else
+      ingredient = Ingredient.find(params[:id])
       if params[:burger_id]
-        burger = Burger.find(params[:burger_id])
-        if burger == nil
-          render json: {message: 'ID inválido'}, status: 400
+        if Burger.where(id: params[:burger_id]).empty?
+          render json: {message: 'ID de hamburguesa inválido'}, status: 400
         else
+          burger = Burger.find(params[:burger_id])
           if burger.ingredients.include? ingredient
             burger.ingredients.delete(ingredient)
             render json: {message: 'Ingrediente retirado'}, status: 200
@@ -59,19 +55,19 @@ class IngredientsController < ApplicationController
   end
 
   def update
-    ingredient = Ingredient.find(params[:id])
-    burger = Burger.find(params[:burger_id])
-    if ingredient == nil
+    if Ingredient.where(id: params[:id]).empty?
       render json: {message: 'Ingrediente inexistente'}, status: 404
     else
-      if burger == nil
+      ingredient = Ingredient.find(params[:id])
+      if Burger.where(id: params[:burger_id]).empty?
         render json: {message: 'ID de hamburguesa inválido'}, status: 400
       else
+        burger = Burger.find(params[:burger_id])
         burger.ingredients << ingredient
         if ingredient.update_attributes(ingredient_params)
           render json: {message: 'Ingrediente agregado'}, status: 201
         else
-          render json: {message: 'ID iválido'}, status: 400
+          render json: {message: 'ID de hamburguesa in  válido'}, status: 400
         end
       end
     end
