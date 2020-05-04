@@ -24,7 +24,8 @@ class BurgersController < ApplicationController
   def create
     burger = Burger.new(burger_params)
     if burger.save
-      render json: burger, status: 201
+      render json: {id: burger[:id], nombre: burger[:nombre], descripcion: burger[:descripcion], imagen: burger[:imagen],
+        ingredientes: burger.ingredients.map{|ing| {path: "https://whispering-thicket-50827.herokuapp.com/ingrediente/#{ing[:id]}"}}}, status: 201
     else
       render json: {message: 'Input inválido'}, status: 400
     end

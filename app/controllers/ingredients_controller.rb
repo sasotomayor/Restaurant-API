@@ -37,7 +37,7 @@ class IngredientsController < ApplicationController
     else
       if params[:burger_id]
         burger = Burger.find(params[:burger_id])
-        if burger.empty?
+        if burger == nil
           render json: {message: 'ID inválido'}, status: 400
         else
           if burger.ingredients.include? ingredient
